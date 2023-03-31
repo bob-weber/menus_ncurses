@@ -30,7 +30,7 @@ typedef enum
     MENU_TYPE_SELECTOR
 } menuType_t;
 
-// Types of menu field items
+// Types of menu field items. These can be handled differently.
 typedef enum
 {
     TYPE_STATIC_LABEL,
@@ -39,7 +39,7 @@ typedef enum
     TYPE_GLYPH,
 } menuItem_t;
 
-// Fields needed for static labels.
+// Fields needed for different field item types.
 typedef struct
 {
     const char *label;
@@ -63,7 +63,9 @@ typedef struct
     char *GetvariableFunc(uint16_t ID);
 } GetVarFunc_t;
 
-// menu item parameters.
+/* menu item parameters.
+ * This consists of common attribues, and some specific to the field type.
+ */
 typedef struct
 {
     const menuItem_t type;
@@ -80,8 +82,9 @@ typedef struct
     };
 } items_t;
 
-// Menu definitions
-
+/* Menu definition
+ * Each menu consists of a few attributes, plus several field items.
+ */
 typedef struct
 {
     const char *title;
@@ -90,9 +93,29 @@ typedef struct
     const items_t *items;
 } menu_t;
 
+/**********************************************************************************************************************
+ * @brief:      Pushes the current menu onto a stack.
+ *
+ * @param menu: The menu to push
+ * @return:     true if successful. false if the stack is full.
+ **********************************************************************************************************************/
 bool Push(const menu_t *menu);
+
+/**********************************************************************************************************************
+ * @brief:      Pops a menu from the menu stack, so we can "pop up" back the way we came down into the menus.
+ *
+ * @return:     Pointer to the popped menu. Null if the stack is empty.
+ **********************************************************************************************************************/
 const menu_t *Pop(void);
 
+/**********************************************************************************************************************
+ * @brief:      Creates a string, given a parameter and it's format.
+ *
+ * @param format:       The format we'll use when printing.
+ * @param param:        The paramter to pring.
+ * @param paramString:  String to which we'll print the value.
+ * @param maxLength:    Length of the string.
+ **********************************************************************************************************************/
 void ParamToString(DataFormat_t format, void* param, char *paramString, int maxLength);
 
 };  // namespace

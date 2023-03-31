@@ -13,7 +13,7 @@ using namespace Menu;
 
 #define MENU_STACK_SIZE     12
 
-
+// Menu stack declaration
 static const menu_t *menuStack[MENU_STACK_SIZE];
 static unsigned int nextAvailableStackEntry= 0;
 

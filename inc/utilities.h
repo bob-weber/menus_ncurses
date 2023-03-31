@@ -1,3 +1,9 @@
+/**********************************************************************************************************************
+ @file:         utilites.h
+ @author:       Robert Weber
+ @copyright:    Released under the MIT license. see license.txt in the top project directory.
+ @brief:        Defines menus used in the system.
+ **********************************************************************************************************************/
 #ifndef INC_UTLITIES_H
 #define INC_UTLITIES_H
 
@@ -8,9 +14,9 @@
 #define GET_BYTE(Value, Byte)		((uint8_t)((Value >> (8 * Byte)) & 0xFF))
 
 #define BITMASK_FROM_VAL(x)									(1 << (x))
-#define SetBit_L4(pTarget, BitOffset)				((*pTarget) |= BITMASK_FROM_VAL(BitOffset))
-#define ClearBit_L4(pTarget, BitOffset)			((*pTarget) &= ~BITMASK_FROM_VAL(BitOffset))
-#define ToggleBit_L4(pTarget, BitOffset)		((*pTarget) ^= BITMASK_FROM_VAL(BitOffset))
+#define SetBit(pTarget, BitOffset)				((*pTarget) |= BITMASK_FROM_VAL(BitOffset))
+#define ClearBit(pTarget, BitOffset)			((*pTarget) &= ~BITMASK_FROM_VAL(BitOffset))
+#define ToggleBit(pTarget, BitOffset)		((*pTarget) ^= BITMASK_FROM_VAL(BitOffset))
 #define IsBitSet(Target, BitOffset)			((Target & BITMASK_FROM_VAL(BitOffset)) != 0)
 #define IsBitClear_L4(Target, BitOffset)		((Target & BITMASK_FROM_VAL(BitOffset)) == 0)
 

@@ -33,11 +33,6 @@ namespace Display
 	static OLED_Params_t OLED_Params = { 30, 5, 25, NULL };
 };
 
-void *Display::Get()
-{
-	return (void *)Display::OLED_Params.pWindow;
-}
-
 void *Display::Init()
 {
 	void *pDisplay = NULL;

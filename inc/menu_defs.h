@@ -11,6 +11,7 @@
 
 #include <stdint.h>
 
+// Make menus visible
 extern const Menu::menu_t MainMenu;
 extern const Menu::menu_t Submenu1;
 extern const Menu::menu_t Submenu2;

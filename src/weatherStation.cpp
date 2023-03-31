@@ -15,7 +15,7 @@
 
 namespace Weather
 {
-
+// A structure which contains the definitions for each weather station paramter.
 typedef struct
 {
     DataFormat_t format;
@@ -26,6 +26,7 @@ typedef struct
     bool increasing;
 } Parameter_t;
 
+// Declare and initialize settings for weather station parameters.
 static Parameter_t WeatherParam[WEATHER_ID_TOTAL];
 float OutTemp_current=33.3, OutTemp_max=95.0, OutTemp_min=15.5, OutTemp_step=0.4;
 uint8_t OutHumidity_current=25, OutHumidity_max=99, OutHumidity_min=20, OutHumidity_step=1;

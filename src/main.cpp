@@ -122,7 +122,7 @@ int main(void)
 
                         case Menu::TYPE_GLYPH:
                             displayStr[0] = pItem->glyph.id;
-                            SetBit_L4(&itemAtrributes, Display::TEXT_ATTR_GLYPH);
+                            SetBit(&itemAtrributes, Display::TEXT_ATTR_GLYPH);
                             Display::WriteString(pItem->rowNum, pItem->columnPercent,
                                 pItem->glyph.align,
                                 displayStr, itemAtrributes);
