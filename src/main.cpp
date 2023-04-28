@@ -22,7 +22,7 @@
 #define MAX_DISPLAY_STR_LENGTH      20
 
 extern const Menu::menu_t MainMenu;
-
+//test
 using namespace std;
 
 /* Prototypes
