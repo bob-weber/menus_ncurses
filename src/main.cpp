@@ -22,7 +22,7 @@
 #define MAX_DISPLAY_STR_LENGTH      20
 
 extern const Menu::menu_t MainMenu;
-//test
+
 using namespace std;
 
 /* Prototypes
@@ -55,9 +55,12 @@ int main(void)
 	pDisplay = Display::Init();
 	if (pDisplay != NULL)
 	{
-        const Menu::menu_t *pMenu = &MainMenu;
-        unsigned int selectedItem = 0;
+        Menu::Init();
+        const Menu::menu_t *pMenu = Menu::GetCurrent();
+
+        //unsigned int selectedItem = 0;
         char displayStr[MAX_DISPLAY_STR_LENGTH];
+        const char *str;
 
         while (pMenu != NULL)
         {
@@ -75,11 +78,13 @@ int main(void)
                 if (pItem != NULL)
                 {
                     uint16_t itemAtrributes = pItem->attributes;
+                    #if 0
                     if ( (pMenu->type == Menu::MENU_TYPE_SELECTOR) &&
                         (i==selectedItem) )
                     {
                         itemAtrributes |= BITMASK_FROM_VAL(Display::TEXT_ATTR_INVERT);
                     }
+                    #endif
 
                     switch (pItem->type)
                     {
@@ -91,29 +96,7 @@ int main(void)
                         
                         case Menu::TYPE_PARAM_STR:
                         {
-                            // Define the variables we might use to save our paramter value.
-                            uint32_t unsignedValue;
-                            int32_t signedValue;
-                            float floatValue;
-            
-                            DataFormat_t format = Weather::paramFormat(pItem->paramString.id);
-                            if ((format == DATA_FORMAT_CHAR)   || (format == DATA_FORMAT_UINT8) ||
-                                (format == DATA_FORMAT_UINT16) || (format == DATA_FORMAT_UINT32))
-                            {
-                                Weather::paramValue(pItem->paramString.id, (void *)&unsignedValue);
-                                Menu::ParamToString(format, (void *)&unsignedValue, displayStr, MAX_DISPLAY_STR_LENGTH);
-                            }
-                            else if ((format == DATA_FORMAT_INT8) || (format == DATA_FORMAT_INT16) ||
-                                     (format == DATA_FORMAT_INT32))
-                            {
-                                Weather::paramValue(pItem->paramString.id, (void *)&signedValue);
-                                Menu::ParamToString(format, (void *)&signedValue, displayStr, MAX_DISPLAY_STR_LENGTH);
-                            }
-                            else if (format == DATA_FORMAT_FLOAT)
-                            {
-                                Weather::paramValue(pItem->paramString.id, (void *)&floatValue);
-                                Menu::ParamToString(format, (void *)&floatValue, displayStr, MAX_DISPLAY_STR_LENGTH);
-                            }
+                            Weather::paramStr(pItem->paramString.id, displayStr, MAX_DISPLAY_STR_LENGTH);
                             Display::WriteString(pItem->rowNum, pItem->columnPercent,
                                 pItem->paramString.align,
                                 displayStr, itemAtrributes);
@@ -128,13 +111,24 @@ int main(void)
                                 displayStr, itemAtrributes);
                             break;
 
+                        case Menu::TYPE_FUNCT_STR:
+                            str = pItem->funcString.func(pItem->paramString.id);
+                            if (str != NULL)
+                            {
+                                Display::WriteString(pItem->rowNum, pItem->columnPercent,
+                                    pItem->funcString.align,
+                                    str, itemAtrributes);
+                            }
+                            break;
+
                         default:
                             break;
                     }
                 }
             }
             
-            Key::Keypress_t keypress = Key::Press();
+            //Key::Keypress_t keypress = Key::Press();
+            #if 0
             switch(keypress)
             {
                 case Key::KEYPRESS_DOWN:
@@ -187,7 +181,9 @@ int main(void)
                 default:    // ignore
                     break;
                     
-            }            
+            }      
+            #endif
+
             usleep(100E3);
         }
     }

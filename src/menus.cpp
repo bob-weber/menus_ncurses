@@ -5,86 +5,56 @@
  @brief:        Defines menus used in the system.
  **********************************************************************************************************************/
 #include "menus.h"
+#include "menuDefs/main_status.h"
+
 #include "utilities.h"
 
 #include <stddef.h>
 
 using namespace Menu;
 
-#define MENU_STACK_SIZE     12
+#define MENU_STACK_SIZE 12
 
 // Menu stack declaration
 static const menu_t *menuStack[MENU_STACK_SIZE];
-static unsigned int nextAvailableStackEntry= 0;
+static unsigned int nextAvailableStackEntry = 0;
+static const menu_t *pCurrentMenu = NULL;
+
+void Menu::Init()
+{
+  pCurrentMenu = &menu_main_status;
+}
+
+const menu_t *Menu::GetCurrent()
+{
+  return pCurrentMenu;
+}
 
 bool Menu::Push(const menu_t *menu)
 {
-    bool Success = false;
+  bool Success = false;
 
-    if (nextAvailableStackEntry < MENU_STACK_SIZE)
-    {   // We have room
-        menuStack[nextAvailableStackEntry] = menu;
-        nextAvailableStackEntry++;
-        Success = true;
-    }
-    // else, stack is full;
+  if (nextAvailableStackEntry < MENU_STACK_SIZE)
+  { // We have room
+    menuStack[nextAvailableStackEntry] = menu;
+    nextAvailableStackEntry++;
+    Success = true;
+  }
+  // else, stack is full;
 
-    return Success;
+  return Success;
 }
 
 const menu_t *Menu::Pop(void)
 {
-    const menu_t *pMenu = NULL;
+  const menu_t *pMenu = NULL;
 
-    if (nextAvailableStackEntry > 0)
-    {
-        nextAvailableStackEntry--;
-        pMenu = menuStack[nextAvailableStackEntry];
-    }
-    // else, stack is empty;
+  if (nextAvailableStackEntry > 0)
+  {
+    nextAvailableStackEntry--;
+    pMenu = menuStack[nextAvailableStackEntry];
+  }
+  // else, stack is empty;
 
-    return pMenu;
+  return pMenu;
 }
-
-void Menu::ParamToString(DataFormat_t format, void* param, char *paramString, int maxLength)
-{
-    switch (format)
-    {
-        case DATA_FORMAT_CHAR:
-            snprintf(paramString, maxLength, "%c", *((char *)param));
-            break;
-
-        case DATA_FORMAT_UINT8:
-            snprintf(paramString, maxLength, "%u", *((uint8_t *)param));
-            break;
-
-        case DATA_FORMAT_UINT16:
-            snprintf(paramString, maxLength, "%u", *((uint16_t *)param));
-            break;
-
-        case DATA_FORMAT_UINT32:
-            snprintf(paramString, maxLength, "%u", *((uint32_t *)param));
-            break;
-
-        case DATA_FORMAT_INT8:
-            snprintf(paramString, maxLength, "%d", *((int8_t *)param));
-            break;
-
-        case DATA_FORMAT_INT16:
-            snprintf(paramString, maxLength, "%d", *((int16_t *)param));
-            break;
-
-        case DATA_FORMAT_INT32:
-            snprintf(paramString, maxLength, "%d", *((int32_t *)param));
-            break;
-
-        case DATA_FORMAT_FLOAT:
-            snprintf(paramString, maxLength, "%.1f", *((float *)param));
-            break;
-
-        default:
-            break;
-
-    }
-}
-

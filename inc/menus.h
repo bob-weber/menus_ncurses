@@ -9,65 +9,68 @@
 
 #include "HAL_Display.h"
 #include "utilities.h"
+#include "weatherParameter.h"
 #include "weatherStation.h"
 
 #include <stdint.h>
 
-namespace Menu {
-
-// Possible button press actions
-typedef enum
+namespace Menu
 {
+
+  // Possible button press actions
+  typedef enum
+  {
     ACTION_NONE = 0,
     ACTION_SELECT_NEXT_FIELD,
     ACTION_SELECT_PREVIOUS_FIELD,
     ACTION_POP_UP
-} buttonAction;
+  } buttonAction;
 
-// Purpose of the menu. Chanegs menu behaviour.
-typedef enum
-{
-    MENU_TYPE_SELECTOR
-} menuType_t;
-
-// Types of menu field items. These can be handled differently.
-typedef enum
-{
+  // Types of menu field items. These can be handled differently.
+  typedef enum
+  {
     TYPE_STATIC_LABEL,
     TYPE_DYNAMIC_LABEL,
     TYPE_PARAM_STR,
     TYPE_GLYPH,
-} menuItem_t;
+    TYPE_FUNCT_STR,
+  } menuItem_t;
 
-// Fields needed for different field item types.
-typedef struct
-{
+  // Fields needed for different field item types.
+  typedef struct
+  {
     const char *label;
     const Display::Alignment_t align;
- } staticLabel_t;
+  } staticLabel_t;
 
-typedef struct
-{
-    const Weather::weather_ID_t id;
+  typedef struct
+  {
+    const weather_ID_t id;
     const Display::Alignment_t align;
-} paramString_t;
+  } paramString_t;
 
-typedef struct
-{
+  typedef struct
+  {
+    const char *(*func)(weather_ID_t);
+    const Display::Alignment_t align;
+  } funcString_t;
+
+  typedef struct
+  {
     const Display::Glyph_t id;
     const Display::Alignment_t align;
-} glyph_t;
+  } glyph_t;
 
-typedef struct
-{
+  typedef struct
+  {
     char *GetvariableFunc(uint16_t ID);
-} GetVarFunc_t;
+  } GetVarFunc_t;
 
-/* menu item parameters.
- * This consists of common attribues, and some specific to the field type.
- */
-typedef struct
-{
+  /* menu item parameters.
+   * This consists of common attribues, and some specific to the field type.
+   */
+  typedef struct
+  {
     const menuItem_t type;
     const uint8_t rowNum;
     const uint8_t columnPercent;
@@ -75,49 +78,46 @@ typedef struct
     const void *enter;
     union
     {
-        staticLabel_t staticLabel;
-        paramString_t paramString;
-        glyph_t glyph;
-       //dynamicLabel dynamicLabel;
+      staticLabel_t staticLabel;
+      paramString_t paramString;
+      glyph_t glyph;
+      funcString_t funcString;
+      // dynamicLabel dynamicLabel;
     };
-} items_t;
+  } items_t;
 
-/* Menu definition
- * Each menu consists of a few attributes, plus several field items.
- */
-typedef struct
-{
+  /* Menu definition
+   * Each menu consists of a few attributes, plus several field items.
+   */
+  typedef struct
+  {
     const char *title;
-    const menuType_t type;
     const unsigned int numItems;
     const items_t *items;
-} menu_t;
+  } menu_t;
 
-/**********************************************************************************************************************
- * @brief:      Pushes the current menu onto a stack.
- *
- * @param menu: The menu to push
- * @return:     true if successful. false if the stack is full.
- **********************************************************************************************************************/
-bool Push(const menu_t *menu);
+  /**********************************************************************************************************************
+   * @brief:      Initializes the menuing code.
+   *********************************Weather*************************************************************************************/
+  void Init(void);
 
-/**********************************************************************************************************************
- * @brief:      Pops a menu from the menu stack, so we can "pop up" back the way we came down into the menus.
- *
- * @return:     Pointer to the popped menu. Null if the stack is empty.
- **********************************************************************************************************************/
-const menu_t *Pop(void);
+  const menu_t *GetCurrent(void);
 
-/**********************************************************************************************************************
- * @brief:      Creates a string, given a parameter and it's format.
- *
- * @param format:       The format we'll use when printing.
- * @param param:        The paramter to pring.
- * @param paramString:  String to which we'll print the value.
- * @param maxLength:    Length of the string.
- **********************************************************************************************************************/
-void ParamToString(DataFormat_t format, void* param, char *paramString, int maxLength);
+  /**********************************************************************************************************************
+   * @brief:      Pushes the current menu onto a stack.
+   *
+   * @param menu: The menu to push
+   * @return:     true if successful. false if the stack is full.
+   *********************************Weather*************************************************************************************/
+  bool Push(const menu_t *menu);
 
-};  // namespace
+  /**********************************************************************************************************************
+   * @brief:      Pops a menu from the menu stack, so we can "pop up" back the way we came down into the menus.
+   *
+   * @return:     Pointer to the popped menu. Null if the stack is empty.
+   **********************************************************************************************************************/
+  const menu_t *Pop(void);
+
+}; // namespace
 
 #endif

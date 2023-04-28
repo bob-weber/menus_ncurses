@@ -7,6 +7,7 @@
 
 #include "weatherStation.h"
 
+#include "weatherParameter.h"
 #include "utilities.h"
 
 #include <chrono>
@@ -15,97 +16,22 @@
 
 namespace Weather
 {
-// A structure which contains the definitions for each weather station paramter.
-typedef struct
-{
-    DataFormat_t format;
-    void *current;
-    void *max;
-    void *min;
-    void *step;
-    bool increasing;
-} Parameter_t;
-
-// Declare and initialize settings for weather station parameters.
-static Parameter_t WeatherParam[WEATHER_ID_TOTAL];
-float OutTemp_current=33.3, OutTemp_max=95.0, OutTemp_min=15.5, OutTemp_step=0.4;
-uint8_t OutHumidity_current=25, OutHumidity_max=99, OutHumidity_min=20, OutHumidity_step=1;
+WeatherParameter *param[WEATHER_ID_TOTAL];
 
 /**********************************************************************************************************************
  @brief:    Initializes weather station data.
  **********************************************************************************************************************/
 void Init(void);
 
-DataFormat_t paramFormat(weather_ID_t id)
-{
-    DataFormat_t format = DATA_FORMAT_NONE;
-    if (id < WEATHER_ID_TOTAL)
-    {
-        format = WeatherParam[id].format;
-    }
-    return format;
-}
-
-void paramValue(weather_ID_t id, void *value)
-{
-    if (id < WEATHER_ID_TOTAL)
-    {
-        switch(WeatherParam[id].format)
-        {
-            case DATA_FORMAT_CHAR:
-                *((char *)value) = *((char *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_UINT8:
-                *((uint8_t *)value) = *((uint8_t *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_INT8:
-                *((int8_t *)value) = *((int8_t *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_UINT16:
-                *((uint16_t *)value) = *((uint16_t *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_INT16:
-                *((int16_t *)value) = *((int16_t *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_UINT32:
-                *((uint32_t *)value) = *((uint32_t *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_INT32:
-                *((int32_t *)value) = *((int32_t *)WeatherParam[id].current);
-                break;
-
-            case DATA_FORMAT_FLOAT:
-                *((float *)value) = *((float *)WeatherParam[id].current);
-                break;
-
-            default:
-                break;
-        }
-    }
-}
-
 void Init(void)
 {
-    WeatherParam[WEATHER_ID_OUTSIDE_TEMPERATURE].current = &OutTemp_current;
-    WeatherParam[WEATHER_ID_OUTSIDE_TEMPERATURE].max = &OutTemp_max;
-    WeatherParam[WEATHER_ID_OUTSIDE_TEMPERATURE].min = &OutTemp_min;
-    WeatherParam[WEATHER_ID_OUTSIDE_TEMPERATURE].step = &OutTemp_step;
-    WeatherParam[WEATHER_ID_OUTSIDE_TEMPERATURE].format = DATA_FORMAT_FLOAT;
-    WeatherParam[WEATHER_ID_OUTSIDE_TEMPERATURE].increasing = true;
-
-    WeatherParam[WEATHER_ID_OUTSIDE_HUMIDITY].current = &OutHumidity_current;
-    WeatherParam[WEATHER_ID_OUTSIDE_HUMIDITY].max = &OutHumidity_max;
-    WeatherParam[WEATHER_ID_OUTSIDE_HUMIDITY].min = &OutHumidity_min;
-    WeatherParam[WEATHER_ID_OUTSIDE_HUMIDITY].step = &OutHumidity_step;
-    WeatherParam[WEATHER_ID_OUTSIDE_HUMIDITY].format = DATA_FORMAT_UINT8;
-    WeatherParam[WEATHER_ID_OUTSIDE_HUMIDITY].increasing = true;
-}
+    param[WEATHER_ID_OUTSIDE_TEMPERATURE] = new WeatherParameter(WEATHER_ID_OUTSIDE_TEMPERATURE, 33.3, 15.5, 95.0, 0.4);
+    param[WEATHER_ID_OUTSIDE_HUMIDITY] = new WeatherParameter(WEATHER_ID_OUTSIDE_HUMIDITY, 25, 20, 99, 1);
+    param[WEATHER_ID_PRESSURE] = new WeatherParameter(WEATHER_ID_PRESSURE, 30.0, 12.0, 109.0, 2.0);
+    param[WEATHER_ID_DEW_POINT] = new WeatherParameter(WEATHER_ID_DEW_POINT, 45.0, 42.0, 62.3, 0.3);
+    param[WEATHER_ID_WIND_SPEED] = new WeatherParameter(WEATHER_ID_WIND_SPEED, 0.0, 0.0, 25.0, 1.0);
+    param[WEATHER_ID_WIND_DIRECTION] = new WeatherParameter(WEATHER_ID_WIND_DIRECTION, 0.0, 0.0, 359.0, 1.0);
+};
 
 void Task()
 {
@@ -115,74 +41,45 @@ void Task()
     {
         for (int i=WEATHER_ID_START; i<WEATHER_ID_TOTAL; i++)
         {
-            Parameter_t *pParam = &WeatherParam[i];
-            switch (pParam->format)
-            {
-                case DATA_FORMAT_UINT8:
-                {
-                    uint8_t *pCurrent = (uint8_t *)pParam->current;
-                    uint8_t *pStep = (uint8_t *)pParam->step;
-                    uint8_t *pMax = (uint8_t *)pParam->max;
-                    uint8_t *pMin = (uint8_t *)pParam->min;
-                    if (pParam->increasing)
-                    {
-                        *pCurrent += *pStep;
-                        if ( *pCurrent > *pMax ) 
-                        {
-                            *pCurrent = *pMax;
-                            pParam->increasing = false;
-                        }
-                    }
-                    else
-                    {
-                        *pCurrent -= *pStep;
-                        if ( *pCurrent < *pMin ) 
-                        {
-                            *pCurrent = *pMin;
-                            pParam->increasing = true;
-                        }
-
-                    }
-                     break;
-               }
-
-                case DATA_FORMAT_FLOAT:
-                {
-                    float *pCurrent = (float *)pParam->current;
-                    float *pStep = (float *)pParam->step;
-                    float *pMax = (float *)pParam->max;
-                    float *pMin = (float *)pParam->min;
-                    if (pParam->increasing)
-                    {
-                        *pCurrent += *pStep;
-                        if ( *pCurrent > *pMax ) 
-                        {
-                            *pCurrent = *pMax;
-                            pParam->increasing = false;
-                        }
-                    }
-                    else
-                    {
-                        *pCurrent -= *pStep;
-                        if ( *pCurrent < *pMin ) 
-                        {
-                            *pCurrent = *pMin;
-                            pParam->increasing = true;
-                        }
-
-                    }
-                     break;
-                }
-
-                default:
-                    break;
-            }
+            param[i]->ApplyStep();
         }
-
         // delay for next update
         std::this_thread::sleep_for(std::chrono::seconds(1));
 
     }   // task loop
+}
+
+void paramStr(weather_ID_t id, char *str, size_t length)
+{
+    if (id < WEATHER_ID_TOTAL)
+    {
+        param[id]->CurrentValueStr(str, length);
+    }
+}
+
+const char *WindDirectionStr(weather_ID_t id)
+{
+    const char *pDirectionStr = NULL;
+    const char *DirectionStr[] =
+    {
+        "N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE",
+        "S", "SSW","SW", "WSW", "W", "WNW", "NW", "NNW", "N"
+    };
+
+    WeatherParameter *pDirection = param[WEATHER_ID_WIND_DIRECTION];
+    if ( (pDirection->current >= 0.0) && (pDirection->current < 360.0) )
+    {
+        const int numSectors = sizeof(DirectionStr)/sizeof(char *);
+        /* Determine what directional sector our compass reading is in. 
+         * Subtract 1/2 sector width from compass reading to center the "0" reading on north;
+         */
+        int sectorWidth = 360 / numSectors;
+        int DirectionSector = pDirection->current / sectorWidth;
+
+        pDirectionStr = DirectionStr[DirectionSector];
+
+    }
+    return pDirectionStr;
 }
 
 }   // namespace

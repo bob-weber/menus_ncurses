@@ -11,7 +11,7 @@ CC = gcc
 # define any directories containing header files other than /usr/include
 #
 SOURCEDIR = src
-INCLUDES = -Iinc -I/usr/include
+INCLUDES = -Iinc -Iinc/menuDefs -I/usr/include
 
 # define any compile-time flags
 CPPFLAGS = -Wall -g -pthread $(INCLUDES)  
@@ -29,7 +29,7 @@ LIBS = -lncurses -lpthread -lstdc++
 
 
 # define the C source files
-SOURCES = $(wildcard $(SOURCEDIR)/*.cpp)
+SOURCES = $(wildcard $(SOURCEDIR)/*.cpp) $(wildcard $(SOURCEDIR)/menuDefs/*.cpp)
 OBJECTS = $(SOURCES:.cpp=.o)
 
 EXECUTABLE = menus
