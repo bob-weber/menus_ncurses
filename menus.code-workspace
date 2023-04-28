@@ -1,21 +1,33 @@
 {
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"files.associations": {
-			"chrono": "cpp",
-			"thread": "cpp",
-			"random": "cpp",
-			"ratio": "cpp",
-			"array": "cpp",
-			"functional": "cpp",
-			"tuple": "cpp",
-			"type_traits": "cpp",
-			"utility": "cpp",
-			"system_error": "cpp"
-		}
-	}
+  "folders": [
+    {
+      "path": "."
+    }
+  ],
+  "settings": {
+    "files.associations": {
+      "chrono": "cpp",
+      "thread": "cpp",
+      "random": "cpp",
+      "ratio": "cpp",
+      "array": "cpp",
+      "functional": "cpp",
+      "tuple": "cpp",
+      "type_traits": "cpp",
+      "utility": "cpp",
+      "system_error": "cpp"
+    },
+    "makefile.launchConfigurations": [
+      {
+        "cwd": "/home/bob/src/menus_ncurses",
+        "binaryPath": "/home/bob/src/menus_ncurses/menus",
+        "binaryArgs": []
+      }
+    ],
+    "files.autoSave": "afterDelay",
+    "editor.formatOnPaste": false,
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": false,
+    "editor.tabSize": 2
+  }
 }
